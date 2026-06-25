@@ -15,6 +15,9 @@ class PlatformerMaker:
         self.game.run()
 
 
-if __name__ == "__main__":
+def main():
     platformer_maker = PlatformerMaker()
     platformer_maker.run()
+
+if __name__ == "__main__":
+    main()
