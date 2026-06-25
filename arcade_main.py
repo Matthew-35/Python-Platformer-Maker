@@ -7,7 +7,7 @@ class ArcadeGame(arcade.Window):
     def __init__(self, PlatformerMaker):
         self.constants = PlatformerMaker.constants
         super().__init__(self.constants.WINDOW_WIDTH, self.constants.WINDOW_HEIGHT, self.constants.WINDOW_TITLE)
-        #arcade.set_background_color(arcade.color.AMAZON)
+        arcade.set_background_color(arcade.color.SKY_BLUE)
 
         self.wall_list = None
         self.player_list = None
