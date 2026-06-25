@@ -3,11 +3,20 @@
 
 import arcade
 
+
 class ArcadeGame(arcade.Window):
     def __init__(self, PlatformerMaker):
         self.constants = PlatformerMaker.constants
         super().__init__(self.constants.WINDOW_WIDTH, self.constants.WINDOW_HEIGHT, self.constants.WINDOW_TITLE)
         arcade.set_background_color(arcade.color.SKY_BLUE)
+
+        # self.game_camera = arcade.Camera2D(
+        #     projection=arcade.LRBT(-self.constants.WINDOW_WIDTH/2, self.constants.GAME_WIDTH*0.75, -self.constants.WINDOW_HEIGHT/2, self.constants.GAME_HEIGHT*0.75)
+        # )
+
+        # # self.game_camera = arcade.Camera2D(
+        # #     projection=arcade.LRBT(-self.constants.GAME_WIDTH/4, self.constants.GAME_WIDTH*0.75, -self.constants.GAME_HEIGHT/4, self.constants.GAME_HEIGHT*0.75)
+        # # )
 
         self.wall_list = None
         self.player_list = None
@@ -31,7 +40,7 @@ class ArcadeGame(arcade.Window):
         for row_idx, row in enumerate(reversed(self.constants.GRID_MAP)):
             for col_idx, cell in enumerate(row):
                 if cell == "W": # Wall
-                    wall = arcade.Sprite(":resources:/images/tiles/boxCrate_double.png", scale=0.5) # Change scale if needed to match tile size
+                    wall = arcade.Sprite(":resources:/images/tiles/boxCrate_double.png", scale=0.5)
                     # Position based on index * tile dimension
                     wall.left = col_idx * self.constants.TILE_SIZE
                     wall.bottom = row_idx * self.constants.TILE_SIZE
@@ -58,10 +67,14 @@ class ArcadeGame(arcade.Window):
     def run(self):
         arcade.run()
 
+
     def on_draw(self):
         self.clear()
+        # self.game_camera.use()
+
         self.wall_list.draw()
         self.player_list.draw()
+
 
     def on_fixed_update(self, delta_time):
         self.physics_engine.update()
@@ -80,6 +93,7 @@ class ArcadeGame(arcade.Window):
         elif key == arcade.key.UP and self.jump_count < self.constants.MAX_JUMP_COUNT:  # Allow double jump (if enabled in constants)
             self.player_sprite.change_y = 10
             self.jump_count += 1
+
 
     def on_key_release(self, key, modifiers):
         if key in (arcade.key.LEFT, arcade.key.RIGHT):
