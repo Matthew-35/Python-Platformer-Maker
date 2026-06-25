@@ -14,10 +14,10 @@ class Constants:
         "W__________W",
         "W__________W",
         "W____WWW___W",
-        "W__________W",
+        "W___W______W",
         "W_______W__W",
         "W_WW_______W",
         "W____W_____W",
-        "W___WW_W___W",
+        "W_P_WW_W___W",
         "WWWWWWWWWWWW",
     ]

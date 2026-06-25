@@ -24,27 +24,33 @@ class ArcadeGame(arcade.Window):
         # --- GENERATE TILEMAP FROM CODE ---
         # Loop through the grid array (top to bottom, left to right)
         # Note: PyGame/Arcade 0,0 is bottom-left, so we reverse rows to read top-down
+        has_player_start = False
         for row_idx, row in enumerate(reversed(self.constants.GRID_MAP)):
             for col_idx, cell in enumerate(row):
-                if cell == "W":
-                    # Use a built-in default resource asset from Arcade
-                    wall = arcade.Sprite(":resources:images/tiles/boxCrate_double.png", scale=0.5)
+                if cell == "W": # Wall
+                    wall = arcade.Sprite(":resources:images/tiles/boxCrate_double.png", scale=0.5) # Change scale if needed to match tile size
                     # Position based on index * tile dimension
                     wall.left = col_idx * self.constants.TILE_SIZE
                     wall.bottom = row_idx * self.constants.TILE_SIZE
                     self.wall_list.append(wall)
-        
-        # Set up player
-        self.player_sprite = arcade.Sprite(":resources:images/animated_characters/female_person/femalePerson_idle.png", scale=0.5)
-        self.player_sprite.center_x = 128
-        self.player_sprite.center_y = 128
-        self.player_list.append(self.player_sprite)
 
+                if cell == "P": # Player starting position (only one player starting position is allowed)
+                    if not has_player_start:
+                        has_player_start = True
+                        # Set up player
+                        self.player_sprite = arcade.Sprite(":resources:images/animated_characters/female_person/femalePerson_idle.png", scale=0.5)
+                        self.player_sprite.center_x = col_idx * self.constants.TILE_SIZE
+                        self.player_sprite.center_y = row_idx * self.constants.TILE_SIZE
+                        self.player_list.append(self.player_sprite)
+                    else:
+                        print("Warning: Multiple player starting positions found. Only the first one will be used.")
+        
         # --- HANDLE PHYSICS ---
         # Feed the engine the player, the walls, and the gravity setting
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player_sprite, walls=self.wall_list, gravity_constant=0.5
         )
+
 
     def run(self):
         arcade.run()
