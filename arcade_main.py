@@ -31,7 +31,7 @@ class ArcadeGame(arcade.Window):
         for row_idx, row in enumerate(reversed(self.constants.GRID_MAP)):
             for col_idx, cell in enumerate(row):
                 if cell == "W": # Wall
-                    wall = arcade.Sprite(":resources:images/tiles/boxCrate_double.png", scale=0.5) # Change scale if needed to match tile size
+                    wall = arcade.Sprite(":resources:/images/tiles/boxCrate_double.png", scale=0.5) # Change scale if needed to match tile size
                     # Position based on index * tile dimension
                     wall.left = col_idx * self.constants.TILE_SIZE
                     wall.bottom = row_idx * self.constants.TILE_SIZE
@@ -41,7 +41,7 @@ class ArcadeGame(arcade.Window):
                     if not has_player_start:
                         has_player_start = True
                         # Set up player
-                        self.player_sprite = arcade.Sprite(":resources:images/animated_characters/female_person/femalePerson_idle.png", scale=0.5)
+                        self.player_sprite = arcade.Sprite(":resources:/gui_basic_assets/window/panel_blue.png", scale=1.5)
                         self.player_sprite.center_x = col_idx * self.constants.TILE_SIZE
                         self.player_sprite.center_y = row_idx * self.constants.TILE_SIZE
                         self.player_list.append(self.player_sprite)
