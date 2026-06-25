@@ -21,3 +21,5 @@ class Constants:
         "W_P_WW_W___W",
         "WWWWWWWWWWWW",
     ]
+
+    MAX_JUMP_COUNT = 2  # Maximum number of jumps allowed (for double jump)

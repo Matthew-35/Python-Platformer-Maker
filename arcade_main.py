@@ -16,6 +16,9 @@ class ArcadeGame(arcade.Window):
         # Physics Engine
         self.physics_engine = None
 
+        # Other:
+        self.jump_count = 0
+
     def setup(self):
         # Enforce spatial hashing for extreme physics performance on walls
         self.wall_list = arcade.SpriteList(use_spatial_hash=True)
@@ -62,14 +65,21 @@ class ArcadeGame(arcade.Window):
 
     def on_fixed_update(self, delta_time):
         self.physics_engine.update()
+        if self.physics_engine.can_jump():
+            self.jump_count = 0  # Reset jump count when player is on the ground
+        else:
+            if self.jump_count == 0:  # If the player is in the air and hasn't jumped yet, set jump count to 1
+                self.jump_count = 1
     
+
     def on_key_press(self, key, modifiers):
         if key == arcade.key.LEFT:
             self.player_sprite.change_x = -5
         elif key == arcade.key.RIGHT:
             self.player_sprite.change_x = 5
-        elif key == arcade.key.UP and self.physics_engine.can_jump():
+        elif key == arcade.key.UP and self.jump_count < self.constants.MAX_JUMP_COUNT:  # Allow double jump (if enabled in constants)
             self.player_sprite.change_y = 10
+            self.jump_count += 1
 
     def on_key_release(self, key, modifiers):
         if key in (arcade.key.LEFT, arcade.key.RIGHT):
