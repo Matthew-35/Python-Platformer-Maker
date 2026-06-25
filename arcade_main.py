@@ -33,6 +33,18 @@ class ArcadeGame(arcade.Window):
                     wall.left = col_idx * self.constants.TILE_SIZE
                     wall.bottom = row_idx * self.constants.TILE_SIZE
                     self.wall_list.append(wall)
+        
+        # Set up player
+        self.player_sprite = arcade.Sprite(":resources:images/animated_characters/female_person/femalePerson_idle.png", scale=0.5)
+        self.player_sprite.center_x = 128
+        self.player_sprite.center_y = 128
+        self.player_list.append(self.player_sprite)
+
+        # --- HANDLE PHYSICS ---
+        # Feed the engine the player, the walls, and the gravity setting
+        self.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.player_sprite, walls=self.wall_list, gravity_constant=0.5
+        )
 
     def run(self):
         arcade.run()
@@ -42,9 +54,20 @@ class ArcadeGame(arcade.Window):
         self.wall_list.draw()
         self.player_list.draw()
 
-    def update(self, delta_time):
-        # Update your game logic here
-        pass
+    def on_fixed_update(self, delta_time):
+        self.physics_engine.update()
+    
+    def on_key_press(self, key, modifiers):
+        if key == arcade.key.LEFT:
+            self.player_sprite.change_x = -5
+        elif key == arcade.key.RIGHT:
+            self.player_sprite.change_x = 5
+        elif key == arcade.key.UP and self.physics_engine.can_jump():
+            self.player_sprite.change_y = 10
+
+    def on_key_release(self, key, modifiers):
+        if key in (arcade.key.LEFT, arcade.key.RIGHT):
+            self.player_sprite.change_x = 0
 
 
 if __name__ == "__main__": # Quickly test the code by running this file directly, instead of switching files every time.
