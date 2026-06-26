@@ -7,7 +7,7 @@ class Constants:
     # GAME_HEIGHT = 1024
 
     # Window dimensions
-    WINDOW_WIDTH = 1024
+    WINDOW_WIDTH = 1224
     WINDOW_HEIGHT = 1024
     
     TILE_SIZE = 64
@@ -23,13 +23,13 @@ class Constants:
         "W______________W",
         "W______________W",
         "W______________W",
-        "W______________W",
+        "W_____K________W",
         "W____WWW_______W",
         "W___W__________W",
         "W_______W______W",
         "W_WW___________W",
-        "W____W_________W",
-        "W_P_WW_W_______W",
+        "W____W__________",
+        "W_P_WW_W________",
         "WWWWWWWWWWWWWWWW",
     ]
 

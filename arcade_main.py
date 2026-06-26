@@ -46,7 +46,7 @@ class ArcadeGame(arcade.Window):
                     wall.bottom = row_idx * self.constants.TILE_SIZE
                     self.wall_list.append(wall)
 
-                if cell == "P": # Player starting position (only one player starting position is allowed)
+                elif cell == "P": # Player starting position (only one player starting position is allowed)
                     if not has_player_start:
                         has_player_start = True
                         # Set up player
@@ -56,6 +56,13 @@ class ArcadeGame(arcade.Window):
                         self.player_list.append(self.player_sprite)
                     else:
                         print("Warning: Multiple player starting positions found. Only the first one will be used.")
+                elif cell == "K": # Kill surface
+                    kill_surface = arcade.Sprite(":resources:/images/tiles/grassMid.png", scale=0.5)
+                    kill_surface.left = col_idx * self.constants.TILE_SIZE
+                    kill_surface.bottom = row_idx * self.constants.TILE_SIZE
+                    self.wall_list.append(kill_surface)
+                    # Add a custom attribute to identify this as a kill surface
+                    kill_surface.is_kill_surface = True
         
         # --- HANDLE PHYSICS ---
         # Feed the engine the player, the walls, and the gravity setting
@@ -75,6 +82,8 @@ class ArcadeGame(arcade.Window):
         self.wall_list.draw()
         self.player_list.draw()
 
+        self.check_death() # Check if the player has died
+
 
     def on_fixed_update(self, delta_time):
         self.physics_engine.update()
@@ -83,6 +92,20 @@ class ArcadeGame(arcade.Window):
         else:
             if self.jump_count == 0:  # If the player is in the air and hasn't jumped yet, set jump count to 1
                 self.jump_count = 1
+    
+
+    def check_death(self):
+        # Check if the player has fallen below the screen (death condition)
+        if self.player_sprite.center_y < 0:
+            print("Player has died. Resetting position.")
+            # Reset player position to starting point
+            for row_idx, row in enumerate(reversed(self.constants.GRID_MAP)):
+                for col_idx, cell in enumerate(row):
+                    if cell == "P":
+                        self.player_sprite.center_x = col_idx * self.constants.TILE_SIZE
+                        self.player_sprite.center_y = row_idx * self.constants.TILE_SIZE
+                        self.jump_count = 0  # Reset jump count on respawn
+                        return
     
 
     def on_key_press(self, key, modifiers):
