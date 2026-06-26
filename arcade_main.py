@@ -28,9 +28,14 @@ class ArcadeGame(arcade.Window):
         # Other:
         self.jump_count = 0
 
+        # Sounds:
+        self.jump_sound = arcade.load_sound(":resources:/sounds/phaseJump1.ogg")
+        self.death_sound = arcade.load_sound(":resources:/sounds/lose2.wav")
+
     def setup(self):
         # Enforce spatial hashing for extreme physics performance on walls
         self.wall_list = arcade.SpriteList(use_spatial_hash=True)
+        self.kill_surfaces = arcade.SpriteList(use_spatial_hash=True)
         self.player_list = arcade.SpriteList()
 
         # --- GENERATE TILEMAP FROM CODE ---
@@ -57,10 +62,10 @@ class ArcadeGame(arcade.Window):
                     else:
                         print("Warning: Multiple player starting positions found. Only the first one will be used.")
                 elif cell == "K": # Kill surface
-                    kill_surface = arcade.Sprite(":resources:/images/tiles/grassMid.png", scale=0.5)
+                    kill_surface = arcade.Sprite(":resources:/images/tiles/lava.png", scale=0.5)
                     kill_surface.left = col_idx * self.constants.TILE_SIZE
                     kill_surface.bottom = row_idx * self.constants.TILE_SIZE
-                    self.wall_list.append(kill_surface)
+                    self.kill_surfaces.append(kill_surface)
                     # Add a custom attribute to identify this as a kill surface
                     kill_surface.is_kill_surface = True
         
@@ -80,9 +85,8 @@ class ArcadeGame(arcade.Window):
         # self.game_camera.use()
 
         self.wall_list.draw()
+        self.kill_surfaces.draw()
         self.player_list.draw()
-
-        self.check_death() # Check if the player has died
 
 
     def on_fixed_update(self, delta_time):
@@ -92,20 +96,33 @@ class ArcadeGame(arcade.Window):
         else:
             if self.jump_count == 0:  # If the player is in the air and hasn't jumped yet, set jump count to 1
                 self.jump_count = 1
-    
+        
+        self.check_death() # Check if the player has died
+
 
     def check_death(self):
         # Check if the player has fallen below the screen (death condition)
         if self.player_sprite.center_y < 0:
             print("Player has died. Resetting position.")
-            # Reset player position to starting point
-            for row_idx, row in enumerate(reversed(self.constants.GRID_MAP)):
-                for col_idx, cell in enumerate(row):
-                    if cell == "P":
-                        self.player_sprite.center_x = col_idx * self.constants.TILE_SIZE
-                        self.player_sprite.center_y = row_idx * self.constants.TILE_SIZE
-                        self.jump_count = 0  # Reset jump count on respawn
-                        return
+            self.kill_player()
+        
+        hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.kill_surfaces)
+        for tile in hit_list: # Check if the player has collided with a kill surface
+            print(f"Player collided with kill surface at ({tile.center_x}, {tile.center_y}).  Resetting player.")
+            self.kill_player()
+
+
+    def kill_player(self):
+        arcade.play_sound(self.death_sound)
+        print("Player has died. Resetting position.")
+        # Reset player position to starting point
+        for row_idx, row in enumerate(reversed(self.constants.GRID_MAP)):
+            for col_idx, cell in enumerate(row):
+                if cell == "P":
+                    self.player_sprite.center_x = col_idx * self.constants.TILE_SIZE
+                    self.player_sprite.center_y = row_idx * self.constants.TILE_SIZE
+                    self.jump_count = 0  # Reset jump count on respawn
+                    return
     
 
     def on_key_press(self, key, modifiers):
@@ -116,6 +133,7 @@ class ArcadeGame(arcade.Window):
         elif key == arcade.key.UP and self.jump_count < self.constants.MAX_JUMP_COUNT:  # Allow double jump (if enabled in constants)
             self.player_sprite.change_y = 10
             self.jump_count += 1
+            arcade.play_sound(self.jump_sound)
 
 
     def on_key_release(self, key, modifiers):
